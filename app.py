@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from forms import RegistrationForm, LoginForm
 import os
 
 load_dotenv()
@@ -17,8 +18,18 @@ app.config['SECRET_KEY'] = SECRET_KEY
 db = SQLAlchemy(app)
 
 @app.route("/")
-def hello():
-    return f'<h1>Hello! {DB_USER}</h1>'
+def index():
+    return render_template('layout.html')
+
+@app.route("/register")
+def register():
+    form = RegistrationForm()
+    return render_template('register.html', form=form)
+
+@app.route("/login")
+def login():
+    form = LoginForm()
+    return render_template('login.html', form=form)
 
 if __name__ == "__main__":
     app.run(debug=True)
