@@ -27,13 +27,10 @@
                     <a class="nav-link" href="#about">About us</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#wwa">Who we are</a>
+                    <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#services">Services</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#programs">Programs</a>
+                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="#contact">Contact us</a>
@@ -42,10 +39,36 @@
         </div>
     </nav>
 
-    <div>
-        {% block content %}
-        {% endblock %}
-    </div>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+        </div>
+        <div class="col-md-4">
+          <div class="content-section">
+            <h3>Our Sidebar</h3>
+            <p class='text-muted'>You can put any information here you'd like.
+              <ul class="list-group">
+                <li class="list-group-item list-group-item-light">Latest Posts</li>
+                <li class="list-group-item list-group-item-light">Announcements</li>
+                <li class="list-group-item list-group-item-light">Calendars</li>
+                <li class="list-group-item list-group-item-light">etc</li>
+              </ul>
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
 
     <script src="https://kit.fontawesome.com/dde9ef0b88.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
