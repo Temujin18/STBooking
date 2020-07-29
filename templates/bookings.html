@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for booking in bookings %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ booking.guest }}</a>
+              <small class="text-muted">{{ booking.start_date }}</small>
+              <small class="text-muted">{{ booking.end_date }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ booking.room }}</a></h2>
+            <p class="article-content">{{ booking.id }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

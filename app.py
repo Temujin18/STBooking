@@ -70,6 +70,11 @@ class Booking(db.Model):
 def index():
     return render_template('layout.html')
 
+@app.route("/bookings")
+def bookings():
+    bookings = Booking.query.all()
+    return render_template('bookings.html', bookings=bookings)
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -84,7 +89,8 @@ def login():
     if form.validate_on_submit():
         if form.email.data == 'admin@stbook.com' and form.password.data == 'stbook':
             flash('You are now logged in!', 'success')
-            return redirect(url_for('index'))
+            
+            return redirect(url_for('bookings'))
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='Login', form=form)
