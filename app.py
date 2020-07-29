@@ -83,7 +83,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if form.email.data == 'admin@stbook.com' and form.password.data == 'stbook':
-            flash('You have been logged in!', 'success')
+            flash('You are now logged in!', 'success')
+            return redirect(url_for('index'))
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='Login', form=form)
