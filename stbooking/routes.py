@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for
 from stbooking import app
-from stbooking.forms import RegistrationForm, LoginForm
+from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking
 
 @app.route("/")
@@ -31,3 +31,11 @@ def login():
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+@app.route("/book", methods=['GET', 'POST'])
+def book():
+    form = BookingForm()
+    if form.validate_on_submit():
+        flash('You have successfully booked a room.', 'success')
+        return redirect(url_for('index'))
+    return render_template('book.html', title='Book', form=form)
