@@ -1,6 +1,7 @@
 from flask import Flask
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 import os
 
 load_dotenv()
@@ -15,5 +16,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@l
 app.config['SECRET_KEY'] = SECRET_KEY
 
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 from stbooking import routes
