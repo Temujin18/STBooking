@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError
+from wtforms.fields import DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 import phonenumbers
 
@@ -10,16 +11,16 @@ class Phone(object):
             self.message = message
         
         def __call__(self, form, field):
-            if len(field.data) > 16:
-                raise ValidationError('Invalid phone number.')
+            if len(field.data) > 11:
+                raise ValidationError('Phone number: (0/63)9XX XXX XXXX.')
             try:
                 input_number = phonenumbers.parse(field.data)
                 if not (phonenumbers.is_valid_number(input_number)):
-                        raise ValidationError('Invalid phone number.')
+                        raise ValidationError('Phone number: (0/63)9XX XXX XXXX.')
             except:
-                input_number = phonenumbers.parse("+1"+field.data)
+                input_number = phonenumbers.parse("+63"+field.data)
                 if not (phonenumbers.is_valid_number(input_number)):
-                        raise ValidationError('Invalid phone number.')
+                        raise ValidationError('Phone number: (0/63)9XX XXX XXXX.')
 
 class BookingForm(FlaskForm):
     firstname = StringField('First Name', 
@@ -30,7 +31,14 @@ class BookingForm(FlaskForm):
     
     email = StringField('Email', validators=[Email()])
 
-    phone = StringField('Phone', validators=[DataRequired()])
+    phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
+
+    start_date = DateField('Start Date', format='%m-%d-%Y', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%m-%d-%Y', validators=[DataRequired()])
+
+    def validate_end_date(form, field):
+        if field.data < form.start_date.data:
+            raise ValidationError("End date must not be earlier than start date.")
 
     submit = SubmitField('Book Now')
 
