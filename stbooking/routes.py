@@ -43,15 +43,20 @@ def book():
         guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
         db.session.add(guest)
         try:
-            first_vacant = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='VACANT').first()
+            first_vacant = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='VACANT').first_or_404()
             logging.debug(form.room.data, first_vacant)
             booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=first_vacant.id)
             db.session.add(booking)
         except:
-            flash(f'No vacant {form.room.data.title()} Rooms available.')
+            flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
             return redirect(url_for('book'))
         else:
             flash('You have successfully booked a room.', 'success')
             db.session.commit()
         return redirect(url_for('index'))
     return render_template('book.html', title='Book', form=form)
+
+@app.route("/manage/rooms", methods=['GET', 'POST'])
+def manage_rooms():
+    rooms = Room.query.order_by(Room.id.asc())
+    return render_template('manage_rooms.html', title='Manage Rooms', rooms=rooms)
