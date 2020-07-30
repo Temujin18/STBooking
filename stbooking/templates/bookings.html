@@ -4,12 +4,12 @@
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ booking.guest }}</a>
-              <small class="text-muted">{{ booking.start_date }}</small>
-              <small class="text-muted">{{ booking.end_date }}</small>
+              <a class="mr-2" href="#">{{ booking.guest.first_name }} {{ booking.guest.last_name }}</a>
+              <small class="text-muted">Start: {{ booking.start_date }}</small>
+              <small class="text-muted">End: {{ booking.end_date }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ booking.room }}</a></h2>
-            <p class="article-content">{{ booking.id }}</p>
+            <h2>{{ booking.room.id }} {{ booking.room.room_type }}</h2>
+            <p class="article-content">Booking ID: {{ booking.id }}</p>
           </div>
         </article>
     {% endfor %}
