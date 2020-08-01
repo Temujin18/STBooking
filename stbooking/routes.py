@@ -93,6 +93,7 @@ def update_booking(booking_id):
 def delete_booking(booking_id):
     logging.debug(f'DEBUG: -------{booking_id}---------')
     booking = Booking.query.get_or_404(booking_id)
+    booking.room.room_status = 'VACANT'
     db.session.delete(booking)
     db.session.commit()
     flash('Your booking has been deleted!', 'success')
