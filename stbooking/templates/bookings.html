@@ -7,10 +7,33 @@
               <a class="mr-2" href="#">{{ booking.guest.first_name }} {{ booking.guest.last_name }}</a>
               <small class="text-muted">Start: {{ booking.start_date }}</small>
               <small class="text-muted">End: {{ booking.end_date }}</small>
+              <div class="text-right">
+                <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('update_booking', booking_id=booking.id) }}">Update</a>
+                <button type="button" class="btn btn-danger btn-sm m-1"  data-toggle="modal" data-target="#deleteModal{{ booking.id }}">Delete</button>
+              </div>
             </div>
             <h2>{{ booking.room.id }} {{ booking.room.room_type }}</h2>
             <p class="article-content">Booking ID: {{ booking.id }}</p>
           </div>
         </article>
+
+        <div class="modal fade" id="deleteModal{{ booking.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Booking?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="{{ url_for('delete_booking', booking_id=booking.id) }}" method="POST">
+                  <input class="btn btn-danger" type="submit" value="Delete">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
     {% endfor %}
 {% endblock content %}

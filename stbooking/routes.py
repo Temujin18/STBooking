@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking
@@ -54,9 +54,45 @@ def book():
             flash('You have successfully booked a room.', 'success')
             db.session.commit()
         return redirect(url_for('index'))
-    return render_template('book.html', title='Book', form=form)
+    return render_template('book.html', title='Book', form=form, legend='Book Today!')
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
 def manage_rooms():
     rooms = Room.query.order_by(Room.id.asc())
     return render_template('manage_rooms.html', title='Manage Rooms', rooms=rooms)
+
+@app.route("/booking/<int:booking_id>/update", methods=['GET', 'POST'])
+def update_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    form = BookingForm()
+    
+    #todo_check if updated room type is available
+    if form.validate_on_submit():
+        booking.guest.first_name = form.firstname.data
+        booking.guest.last_name = form.lastname.data
+        booking.guest.email = form.email.data
+        booking.room.room_type = form.room.data
+        booking.start_date = form.start_date.data
+        booking.end_date = form.end_date.data
+        booking.guest.phone = form.phone.data
+        db.session.commit()
+        flash('Your booking has been updated!', 'success')
+        return redirect(url_for('bookings'))
+    elif request.method == 'GET':
+        form.firstname.data = booking.guest.first_name
+        form.lastname.data = booking.guest.last_name
+        form.email.data = booking.guest.email
+        form.room.data = booking.room.room_type
+        form.start_date.data = booking.start_date
+        form.end_date.data = booking.end_date
+        form.phone.data = booking.guest.phone
+    return render_template('book.html', title='Update Booking', form=form, legend='Update Booking')
+
+@app.route("/booking/<int:booking_id>/delete", methods=['POST'])
+def delete_booking(booking_id):
+    logging.debug(f'DEBUG: -------{booking_id}---------')
+    booking = Booking.query.get_or_404(booking_id)
+    db.session.delete(booking)
+    db.session.commit()
+    flash('Your booking has been deleted!', 'success')
+    return redirect(url_for('bookings'))
