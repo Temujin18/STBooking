@@ -46,6 +46,7 @@ def book():
             first_vacant = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='VACANT').first_or_404()
             logging.debug(form.room.data, first_vacant)
             booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=first_vacant.id)
+            first_vacant.room_status = 'BOOKED'
             db.session.add(booking)
         except:
             flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
