@@ -60,7 +60,10 @@ def book():
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
 def manage_rooms():
-    rooms = Room.query.order_by(Room.id.asc())
+    # page = request.args.get('page',1, type=int)
+    # bookings = Booking.query.paginate(page=page, per_page=3)
+    page = request.args.get('page',1, type=int)
+    rooms = Room.query.order_by(Room.id.asc()).paginate(page=page, per_page=10)
     return render_template('manage_rooms.html', title='Manage Rooms', rooms=rooms)
 
 @app.route("/booking/<int:booking_id>/update", methods=['GET', 'POST'])
