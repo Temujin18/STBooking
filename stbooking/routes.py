@@ -12,7 +12,8 @@ def index():
 
 @app.route("/bookings")
 def bookings():
-    bookings = Booking.query.all()
+    page = request.args.get('page',1, type=int)
+    bookings = Booking.query.paginate(page=page, per_page=3)
     return render_template('bookings.html', bookings=bookings)
 
 @app.route("/register", methods=['GET', 'POST'])
