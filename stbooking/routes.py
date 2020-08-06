@@ -91,7 +91,6 @@ def update_booking(booking_id):
 
 @app.route("/booking/<int:booking_id>/delete", methods=['POST'])
 def delete_booking(booking_id):
-    logging.debug(f'DEBUG: -------{booking_id}---------')
     booking = Booking.query.get_or_404(booking_id)
     booking.room.room_status = 'VACANT'
     db.session.delete(booking)
