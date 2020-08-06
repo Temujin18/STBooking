@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, ValidationError
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 import phonenumbers
+from datetime import date
 
 class Phone(object):
         def __init__(self, message=None):
@@ -35,7 +36,7 @@ class BookingForm(FlaskForm):
     __room_types = [('single','Single'),('double','Double'),('triple','Triple'),('quad','Quad'),('queen','Queen'),('king','King')]
     room = SelectField('Room Type', choices=__room_types)
 
-    start_date = DateField('Start Date', format='%m-%d-%Y', validators=[DataRequired()])
+    start_date = DateField('Start Date', format='%m-%d-%Y', validators=[DataRequired()], default=date.today)
     end_date = DateField('End Date', format='%m-%d-%Y', validators=[DataRequired()])
 
     def validate_end_date(form, field):
