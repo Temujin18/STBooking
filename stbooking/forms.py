@@ -57,6 +57,16 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password',
             validators=[DataRequired(), EqualTo('password')])
 
+    firstname = StringField('First Name', 
+            validators=[DataRequired(), Length(min=2, max=50)])
+    
+    lastname = StringField('Last Name', 
+            validators=[DataRequired(), Length(min=2, max=50)])
+    
+    email = StringField('Email', validators=[Email()])
+
+    phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
+
     submit = SubmitField('Sign Up')
 
 
@@ -68,4 +78,4 @@ class LoginForm(FlaskForm):
 
     remember = BooleanField('Remember Me')
 
-    submit = SubmitField('Sign Up')
+    submit = SubmitField('Log In')
