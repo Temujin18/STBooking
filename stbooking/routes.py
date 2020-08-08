@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -12,6 +12,7 @@ def index():
     return render_template('layout.html')
 
 @app.route("/bookings")
+@login_required
 def bookings():
     page = request.args.get('page',1, type=int)
     bookings = Booking.query.paginate(page=page, per_page=3)
