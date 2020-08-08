@@ -47,7 +47,7 @@ class Booking(db.Model):
     def __repr__(self):
         return f"Booking({self.id}, {self.room}, {self.guest})"
 
-class User(db.Model):
+class UserAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(60), nullable=False)
@@ -55,4 +55,4 @@ class User(db.Model):
     
 
     def __repr__(self):
-        return f"Guest({self.id}, {self.first_name}, {self.last_name})"
+        return f"User({self.id}, {self.username}, {self.guest_id})"
