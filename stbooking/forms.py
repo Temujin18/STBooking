@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 import phonenumbers
 from datetime import date
+from stbooking.models import UserAccount, Guest
 
 class Phone(object):
         def __init__(self, message=None):
@@ -64,6 +65,16 @@ class RegistrationForm(FlaskForm):
             validators=[DataRequired(), Length(min=2, max=50)])
 
     phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
+
+    def validate_username(form, username):
+        exists = UserAccount.query.filter_by(username=username.data).scalar() is not None
+        if exists:
+            raise ValidationError("Username already exists.")
+
+    def validate_email(form, email):
+        exists = Guest.query.filter_by(email=email.data).scalar() is not None
+        if exists:
+            raise ValidationError("Email already in use.")
 
     submit = SubmitField('Sign Up')
 
