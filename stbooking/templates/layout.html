@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='stlogo_1.png') }}" />
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='stlogo_1.png') }}"/>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='main.css') }}">
 
     {%if title%}
@@ -17,65 +17,72 @@
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-md navbar-light bg-light sticky-top">
-        <a href="#" class="navbar-brand"><img src="{{ url_for('static', filename='stlogo_trans_1.png') }}"></a>
+        <a href="{{ url_for('home') }}" class="navbar-brand"><img src="{{ url_for('static', filename='stlogo_trans_1.png') }}" style="max-height: 50%; max-width: 50%;"></a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarItems">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarItems">
             <ul class="navbar-nav ml-auto">
+              {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#about">About Us</a>
-                  </li>
-                  {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
-                    </li>
-                  {% else %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('register') }}">Register</a>
-                    </li>
-                  {% endif %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('book') }}">Book With Us</a>
-                  </li>
+                  <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('book') }}">Book With Us</a>
+              </li>
             </ul>
         </div>
     </nav>
 
     <main role="main" class="container">
-      <div class="row">
-        <div class="col-md-8">
-          {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endwith %}
-          {% block content %}{% endblock %}
-        </div>
-        {% if current_user.is_authenticated %}
-          <div class="col-md-4">
-            <div class="content-section">
-              <h3>Our Sidebar</h3>
-              <p class='text-muted'>You can put any information here you'd like.
-                <ul class="list-group">
-                  <li class="list-group-item list-group-item-light">Latest Posts</li>
-                  <li class="list-group-item list-group-item-light">Announcements</li>
-                  <li class="list-group-item list-group-item-light">Calendars</li>
-                  <li class="list-group-item list-group-item-light">etc</li>
-                </ul>
-              </p>
-            </div>
-          </div>
-        {% endif %}
+      <div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
       </div>
     </main>
+
+    <footer>
+      <div class="container-fluid padding">
+      <div class="row text-center">
+          <div class="col-md-6">
+              <img src="{{ url_for('static', filename='stlogo_1.png') }}">
+              <hr class="light">
+              <p>555-5555</p>
+              <p>email@email.com</p>
+              <p>10th Street Barangay</p>
+              <p> City Province 9500</p>
+          </div>
+          <div class="col-md-6">
+              <hr class="light">
+              <p>Service Areas</p>
+              <hr class="light">
+              <p>Area One</p>
+              <p>Area Two</p>
+              <p>Area Three</p>
+          </div>
+          <div class="col-12">
+              <hr class="light">
+              <h5>&copy; john.exim.ece@gmail.com</h5>
+          </div>
+      </div>
+      </div>
+      </footer>
 
 
     <script src="https://kit.fontawesome.com/dde9ef0b88.js" crossorigin="anonymous"></script>

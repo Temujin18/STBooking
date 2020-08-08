@@ -8,8 +8,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 @app.route("/")
-def index():
-    return render_template('layout.html')
+def home():
+    return render_template('home.html')
 
 @app.route("/bookings")
 @login_required
@@ -42,8 +42,8 @@ def login():
         user = UserAccount.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            flash('You are now logged in!', 'success')
-            return redirect(url_for('bookings'))
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -51,7 +51,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 @app.route("/book", methods=['GET', 'POST'])
 def book():
@@ -71,7 +71,7 @@ def book():
         else:
             flash('You have successfully booked a room.', 'success')
             db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('home'))
     return render_template('book.html', title='Book', form=form, legend='Book Today!')
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
