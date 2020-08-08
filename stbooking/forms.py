@@ -62,8 +62,6 @@ class RegistrationForm(FlaskForm):
     
     lastname = StringField('Last Name', 
             validators=[DataRequired(), Length(min=2, max=50)])
-    
-    email = StringField('Email', validators=[Email()])
 
     phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
 
