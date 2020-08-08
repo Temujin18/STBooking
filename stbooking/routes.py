@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount
-from flask_login import login_user
+from flask_login import login_user, current_user, logout_user
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -46,6 +46,11 @@ def login():
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route("/book", methods=['GET', 'POST'])
 def book():
