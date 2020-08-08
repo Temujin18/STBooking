@@ -2,6 +2,7 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate 
 import os
 
 load_dotenv()
@@ -17,5 +18,6 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+migrate = Migrate(app, db)
 
 from stbooking import routes
