@@ -1,4 +1,5 @@
-from stbooking import db
+from stbooking import db, login_manager
+from flask_login import UserMixin
 
 ## Room table in postgres has room_type enum with values single, double, triple, quad, queen, king
 ## Room table also has room_status enum with values booked, vacant, out order
@@ -15,6 +16,10 @@ from stbooking import db
 #     BOOKED = 'booked'
 #     VACANT = 'vacant'
 #     OUT_OF_ORDER = 'out of order'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return UserAccount.query.get(int(user_id))
 
 class Guest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -47,7 +52,7 @@ class Booking(db.Model):
     def __repr__(self):
         return f"Booking({self.id}, {self.room}, {self.guest})"
 
-class UserAccount(db.Model):
+class UserAccount(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)

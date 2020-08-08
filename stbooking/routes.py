@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount
+from flask_login import login_user
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -37,9 +38,10 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'admin@stbook.com' and form.password.data == 'stbook':
+        user = UserAccount.query.filter_by(username=form.username.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
             flash('You are now logged in!', 'success')
-            
             return redirect(url_for('bookings'))
         else:
             flash('Login Failed. Please check username and password.', 'danger')
