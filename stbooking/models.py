@@ -23,7 +23,7 @@ class Guest(db.Model):
     email = db.Column(db.String(100))
     phone = db.Column(db.String(20))
     guest_booking = db.relationship('Booking', backref='guest', lazy=False)
-    guest_info = db.relationship('User', backref='guest_info', lazy=False)
+    guest_info = db.relationship('UserAccount', backref='guest_info', lazy=False)
 
     def __repr__(self):
         return f"Guest({self.id}, {self.first_name}, {self.last_name})"

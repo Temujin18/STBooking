@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
-from stbooking.models import Guest, Room, Booking
+from stbooking.models import Guest, Room, Booking, UserAccount
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -20,9 +20,17 @@ def bookings():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        # hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
+        db.session.add(guest)
+        db.session.commit()
+        logging.info(guest)
+        user = UserAccount(username=form.username.data, password=hashed_pw, guest_id=guest.id)
+        db.session.add(user)
+        db.session.commit()
+        logging.info(user)
         flash(f'Account created for {form.username.data}.', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -60,8 +68,6 @@ def book():
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
 def manage_rooms():
-    # page = request.args.get('page',1, type=int)
-    # bookings = Booking.query.paginate(page=page, per_page=3)
     page = request.args.get('page',1, type=int)
     rooms = Room.query.order_by(Room.id.asc()).paginate(page=page, per_page=10)
     return render_template('manage_rooms.html', title='Manage Rooms', rooms=rooms)
