@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
-from stbooking.models import Guest, Room, Booking, UserAccount
+from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount
 from flask_login import login_user, current_user, logout_user, login_required
 import logging
 
@@ -115,3 +115,17 @@ def delete_booking(booking_id):
     db.session.commit()
     flash('Your booking has been deleted!', 'success')
     return redirect(url_for('bookings'))
+
+
+@app.route("/admin/login", methods=['GET', 'POST'])
+def adminlogin():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = AdminAccount.query.filter_by(username=form.username.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(url_for('manage_rooms'))
+        else:
+            flash('Login Failed. Please check username and password.', 'danger')
+    return render_template('login.html', title='AdminLogin', form=form)
