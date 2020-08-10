@@ -69,7 +69,7 @@ def book():
             booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=first_vacant.id)
             first_vacant.room_status = 'BOOKED'
             db.session.add(booking)
-        except:
+        except Exception:
             flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
             return redirect(url_for('book'))
         else:
@@ -142,7 +142,7 @@ def adminlogin():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return render_template('manage.html', title='Manage')
+            return redirect(url_for('manage_rooms'))
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='AdminLogin', form=form)
