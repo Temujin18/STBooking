@@ -67,11 +67,13 @@ def book():
         if not available_room:
             available_room = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='BOOKED').first()
 
+        guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
+
+        db.session.add(guest)
+        db.session.commit()
         try:
-            guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
             booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=available_room.id)
             available_room.room_status = 'BOOKED'
-            db.session.add(guest)
             db.session.add(booking)
         except Exception:
             flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
