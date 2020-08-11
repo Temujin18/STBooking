@@ -3,6 +3,7 @@ from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount
 from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy import exc
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -61,17 +62,20 @@ def logout():
 def book():
     form = BookingForm()
     if form.validate_on_submit():
-        guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
-        db.session.add(guest)
+        available_room = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='VACANT').first()
+
+        if not available_room:
+            available_room = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='BOOKED').first()
+
         try:
-            first_vacant = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='VACANT').first_or_404()
-            logging.debug(form.room.data, first_vacant)
-            booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=first_vacant.id)
-            first_vacant.room_status = 'BOOKED'
+            guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
+            booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=available_room.id)
+            available_room.room_status = 'BOOKED'
+            db.session.add(guest)
             db.session.add(booking)
         except Exception:
             flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
-            return redirect(url_for('book'))
+            return redirect(url_for('book')) 
         else:
             flash('You have successfully booked a room.', 'success')
             db.session.commit()

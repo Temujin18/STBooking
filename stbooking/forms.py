@@ -45,6 +45,11 @@ class BookingForm(FlaskForm):
         if field.data < form.start_date.data:
             raise ValidationError("End date must not be earlier than start date.")
 
+    def validate_email(form, email):
+        exists = Guest.query.filter_by(email=email.data).scalar() is not None
+        if exists:
+            raise ValidationError("Email already in use.")
+
     submit = SubmitField('Book Now')
 
 class RegistrationForm(FlaskForm):
