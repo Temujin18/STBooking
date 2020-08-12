@@ -16,7 +16,7 @@ def home():
 @login_required
 def bookings():
     page = request.args.get('page',1, type=int)
-    bookings = Booking.query.paginate(page=page, per_page=3)
+    bookings = Booking.query.filter(Guest.id==current_user.guest_id).paginate(page=page, per_page=3)
     return render_template('bookings.html', bookings=bookings, page='bookings')
 
 @app.route("/register", methods=['GET', 'POST'])
