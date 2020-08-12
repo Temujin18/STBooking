@@ -66,7 +66,6 @@ def book():
 
         if not available_room:
             booked_rooms = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='BOOKED').all()
-            logging.info(booked_rooms)
 
             available_room = get_available_booked_room(booked_rooms, form)
 
@@ -94,29 +93,19 @@ def book():
     return render_template('book.html', title='Book', form=form, legend='Book Today!')
 
 def get_available_booked_room(booked_rooms, form):
-    logging.info('*'*20 + 'Inside method' + '*'*20)
-    logging.info(booked_rooms)
     for booked_room in booked_rooms:
-        logging.info(booked_room.id)
             #check if bookings for each room collides with booking dates
         room_bookings = Booking.query.filter_by(room_id = booked_room.id).all()
-        logging.info('*'*10 + 'Inside b_rooms loop' + '*'*10)
-        logging.info(room_bookings)
 
         if not room_bookings: #will only trigger if a room is booked but there are no bookings associated with it
             return booked_room
 
         for room_booking in room_bookings:
-            logging.info('*'*10 + 'Inside r_bookings loop' + '*'*10)
-            logging.info(room_booking)
             #check if booking dates collide with each booking with conditional; (StartA <= EndB) and (EndA >= StartB)
             if form.start_date.data <= room_booking.end_date and form.end_date.data >= room_booking.start_date:
-                logging.info('Collision TRUE')
                 break #if collision is found, break out of this loop to check other booked rooms
             else:
-                logging.info('Collision FALSE')
                 continue
-
         else:
             return booked_room #if no collisions with booking dates of a booked room, return room object
 
@@ -156,6 +145,16 @@ def update_booking(booking_id):
         booking.start_date = form.start_date.data
         booking.end_date = form.end_date.data
         booking.guest.phone = form.phone.data
+
+        available_room = Room.query.filter(Room.room_type==booking.room.room_type.title(), Room.room_status=='VACANT').first()
+
+        if not available_room:
+            booked_rooms = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='BOOKED').all()
+
+            available_room = get_available_booked_room(booked_rooms, form)
+
+        booking.room.room_id = available_room.id
+
         db.session.commit()
         flash('Your booking has been updated!', 'success')
         return redirect(url_for('bookings'))

@@ -35,7 +35,7 @@ class BookingForm(FlaskForm):
 
     phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
 
-    __room_types = [('single','Single'),('double','Double'),('triple','Triple'),('quad','Quad'),('queen','Queen'),('king','King')]
+    __room_types = [('Single','Single'),('Souble','Double'),('Triple','Triple'),('Quad','Quad'),('Queen','Queen'),('King','King')]
     room = SelectField('Room Type', choices=__room_types)
 
     start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()] )
