@@ -3,7 +3,7 @@ from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount
 from flask_login import login_user, current_user, logout_user, login_required
-from sqlalchemy import exc
+from sqlalchemy import and_, or_
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -65,7 +65,14 @@ def book():
         available_room = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='VACANT').first()
 
         if not available_room:
-            available_room = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='BOOKED').first()
+            booked_rooms = Room.query.filter(Room.room_type==form.room.data.title(), Room.room_status=='BOOKED').all()
+            logging.info(booked_rooms)
+
+            available_room = get_available_booked_room(booked_rooms, form)
+
+        if not available_room: #if get_available_booked_room returns None, then no rooms available
+            flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
+            return redirect(url_for('book'))
 
         exists = Guest.query.filter_by(email=form.email.data).scalar() is not None
 
@@ -77,18 +84,44 @@ def book():
         db.session.add(guest)
         db.session.commit()
 
-        try:
-            booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=available_room.id)
-            available_room.room_status = 'BOOKED'
-            db.session.add(booking)
-        except Exception:
-            flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
-            return redirect(url_for('book')) 
-        else:
-            flash('You have successfully booked a room.', 'success')
-            db.session.commit()
+        booking = Booking(start_date=form.start_date.data, end_date=form.end_date.data, guest_id=guest.id, room_id=available_room.id)
+        available_room.room_status = 'BOOKED'
+        db.session.add(booking)
+
+        flash('You have successfully booked a room.', 'success')
+        db.session.commit()
         return redirect(url_for('home'))
     return render_template('book.html', title='Book', form=form, legend='Book Today!')
+
+def get_available_booked_room(booked_rooms, form):
+    logging.info('*'*20 + 'Inside method' + '*'*20)
+    logging.info(booked_rooms)
+    for booked_room in booked_rooms:
+        logging.info(booked_room.id)
+            #check if bookings for each room collides with booking dates
+        room_bookings = Booking.query.filter_by(room_id = booked_room.id).all()
+        logging.info('*'*10 + 'Inside b_rooms loop' + '*'*10)
+        logging.info(room_bookings)
+
+        if not room_bookings: #will only trigger if a room is booked but there are no bookings associated with it
+            return booked_room
+
+        for room_booking in room_bookings:
+            logging.info('*'*10 + 'Inside r_bookings loop' + '*'*10)
+            logging.info(room_booking)
+            #check if booking dates collide with each booking with conditional; (StartA <= EndB) and (EndA >= StartB)
+            if form.start_date.data <= room_booking.end_date and form.end_date.data >= room_booking.start_date:
+                logging.info('Collision TRUE')
+                break #if collision is found, break out of this loop to check other booked rooms
+            else:
+                logging.info('Collision FALSE')
+                continue
+
+        else:
+            return booked_room #if no collisions with booking dates of a booked room, return room object
+
+    else:
+        return None #if all rooms are looped without returning a booked_room
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
 def manage_rooms():
