@@ -1,5 +1,6 @@
-from stbooking import db, login_manager
+from stbooking import db, login_manager, admin
 from flask_login import UserMixin
+from flask_admin.contrib.sqla import ModelView
 
 ## Room table in postgres has room_type enum with values single, double, triple, quad, queen, king
 ## Room table also has room_status enum with values booked, vacant, out order
@@ -70,3 +71,8 @@ class AdminAccount(db.Model, UserMixin):
 
     def __repr__(self):
         return f"Admin({self.id}, {self.username})"
+
+admin.add_view(ModelView(Guest, db.session))
+admin.add_view(ModelView(Room, db.session))
+admin.add_view(ModelView(Booking, db.session))
+admin.add_view(ModelView(UserAccount, db.session))
