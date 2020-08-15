@@ -23,7 +23,7 @@ class Guest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(100), unique=True)
+    email = db.Column(db.String(255))
     phone = db.Column(db.String(20))
     guest_booking = db.relationship('Booking', backref='guest', lazy=False)
     guest_info = db.relationship('UserAccount', backref='guest_info', lazy=False)
