@@ -56,6 +56,7 @@ class UserAccount(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False, server_default='')
     email_confirmed_at = db.Column(db.DateTime())
     guest_id = db.Column(db.Integer, db.ForeignKey('guest.id'), nullable=False)
+    roles = db.relationship('Role', secondary='user_roles')
 
     def __repr__(self):
         return f"User({self.id}, {self.username}, {self.guest_id})"

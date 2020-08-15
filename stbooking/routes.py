@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
-from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount
+from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount, Role
 from flask_user import current_user, login_required
 from flask_login import login_user, logout_user
 from sqlalchemy import and_, or_
@@ -31,6 +31,7 @@ def register():
         db.session.add(guest)
         db.session.commit()
         user = UserAccount(email=form.email.data, password=hashed_pw, guest_id=guest.id)
+        user.roles.append(Role(name='guest'))
         db.session.add(user)
         db.session.commit()
         flash(f'Account created for {form.email.data}.', 'success')
