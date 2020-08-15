@@ -1,5 +1,5 @@
-from stbooking import app, db, login_manager, admin
-from flask_user import UserMixin, UserManager
+from stbooking import db, login_manager, admin
+from flask_user import UserMixin
 from flask_admin.contrib.sqla import ModelView
 
 # class RoomType(enum.Enum):
@@ -60,7 +60,7 @@ class UserAccount(db.Model, UserMixin):
     roles = db.relationship('Role', secondary='user_roles')
 
     def __repr__(self):
-        return f"User({self.id}, {self.username}, {self.guest_id})"
+        return f"User({self.id}, {self.email}, {self.roles})"
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -82,7 +82,6 @@ class AdminAccount(db.Model, UserMixin):
     def __repr__(self):
         return f"Admin({self.id}, {self.username})"
 
-user_manager = UserManager(app, db, UserAccount)
 
 admin.add_view(ModelView(Guest, db.session))
 admin.add_view(ModelView(Room, db.session))
