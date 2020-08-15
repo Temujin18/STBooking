@@ -52,6 +52,7 @@ class Booking(db.Model):
 
 class UserAccount(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False, server_default='')
     email_confirmed_at = db.Column(db.DateTime())
