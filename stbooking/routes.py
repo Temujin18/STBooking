@@ -2,12 +2,14 @@ from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount, Role
-from flask_user import current_user, login_required
+from flask_user import current_user, login_required, roles_required, UserManager
 from flask_login import login_user, logout_user
 from sqlalchemy import and_, or_
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
+
+user_manager = UserManager(app, db, UserAccount)
 
 @app.route("/")
 def home():
@@ -100,6 +102,7 @@ def book():
 
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
+@roles_required('admin')
 def manage_rooms():
     page = request.args.get('page',1, type=int)
     rooms = Room.query.order_by(Room.id.asc()).paginate(page=page, per_page=10)
@@ -119,6 +122,7 @@ def manage_guests():
 
 
 @app.route("/booking/<int:booking_id>/update", methods=['GET', 'POST'])
+@login_required
 def update_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     form = BookingForm()
@@ -155,6 +159,7 @@ def update_booking(booking_id):
     return render_template('book.html', title='Update Booking', form=form, legend='Update Booking')
 
 @app.route("/booking/<int:booking_id>/delete", methods=['POST'])
+@login_required
 def delete_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     booking.room.room_status = 'VACANT'
@@ -168,7 +173,7 @@ def delete_booking(booking_id):
 def adminlogin():
     form = LoginForm()
     if form.validate_on_submit():
-        user = AdminAccount.query.filter_by(username=form.username.data).first()
+        user = UserAccount.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
