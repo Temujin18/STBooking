@@ -31,7 +31,13 @@ def register():
         db.session.add(guest)
         db.session.commit()
         user = UserAccount(email=form.email.data, password=hashed_pw, guest_id=guest.id)
-        user.roles.append(Role(name='guest'))
+        user_role = get_role('guest')
+
+        if not user_role:
+            user.roles.append(Role(name='guest'))
+        else:
+            user.roles.append(user_role)
+
         db.session.add(user)
         db.session.commit()
         flash(f'Account created for {form.email.data}.', 'success')
@@ -92,25 +98,6 @@ def book():
         return redirect(url_for('home'))
     return render_template('book.html', title='Book', form=form, legend='Book Today!')
 
-def get_available_booked_room(booked_rooms, form):
-    for booked_room in booked_rooms:
-            #check if bookings for each room collides with booking dates
-        room_bookings = Booking.query.filter_by(room_id = booked_room.id).all()
-
-        if not room_bookings: #will only trigger if a room is booked but there are no bookings associated with it
-            return booked_room
-
-        for room_booking in room_bookings:
-            #check if booking dates collide with each booking with conditional; (StartA <= EndB) and (EndA >= StartB)
-            if form.start_date.data <= room_booking.end_date and form.end_date.data >= room_booking.start_date:
-                break #if collision is found, break out of this loop to check other booked rooms
-            else:
-                continue
-        else:
-            return booked_room #if no collisions with booking dates of a booked room, return room object
-
-    else:
-        return None #if all rooms are looped without returning a booked_room
 
 @app.route("/manage/rooms", methods=['GET', 'POST'])
 def manage_rooms():
@@ -189,3 +176,27 @@ def adminlogin():
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='AdminLogin', form=form)
+
+def get_available_booked_room(booked_rooms, form):
+    for booked_room in booked_rooms:
+            #check if bookings for each room collides with booking dates
+        room_bookings = Booking.query.filter_by(room_id = booked_room.id).all()
+
+        if not room_bookings: #will only trigger if a room is booked but there are no bookings associated with it
+            return booked_room
+
+        for room_booking in room_bookings:
+            #check if booking dates collide with each booking with conditional; (StartA <= EndB) and (EndA >= StartB)
+            if form.start_date.data <= room_booking.end_date and form.end_date.data >= room_booking.start_date:
+                break #if collision is found, break out of this loop to check other booked rooms
+            else:
+                continue
+        else:
+            return booked_room #if no collisions with booking dates of a booked room, return room object
+
+    else:
+        return None #if all rooms are looped without returning a booked_room
+
+
+def get_role(role):
+    return Role.query.filter_by(name=role).first()
