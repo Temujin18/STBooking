@@ -30,10 +30,10 @@ def register():
         guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
         db.session.add(guest)
         db.session.commit()
-        user = UserAccount(email=form.username.data, password=hashed_pw, guest_id=guest.id)
+        user = UserAccount(email=form.email.data, password=hashed_pw, guest_id=guest.id)
         db.session.add(user)
         db.session.commit()
-        flash(f'Account created for {form.username.data}.', 'success')
+        flash(f'Account created for {form.email.data}.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
