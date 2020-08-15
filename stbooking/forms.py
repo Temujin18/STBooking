@@ -47,10 +47,7 @@ class BookingForm(FlaskForm):
 
     submit = SubmitField('Book Now')
 
-class RegistrationForm(FlaskForm):
-    username = StringField('Username',
-            validators=[DataRequired(), Length(min=2, max=20)])
-    
+class RegistrationForm(FlaskForm):    
     email = StringField('Email',
             validators=[DataRequired(), Email()])
 
@@ -67,13 +64,8 @@ class RegistrationForm(FlaskForm):
 
     phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
 
-    def validate_username(form, username):
-        exists = UserAccount.query.filter_by(username=username.data).scalar() is not None
-        if exists:
-            raise ValidationError("Username already exists.")
-
     def validate_email(form, email):
-        exists = Guest.query.filter_by(email=email.data).scalar() is not None
+        exists = UserAccount.query.filter_by(email=email.data).scalar() is not None
         if exists:
             raise ValidationError("Email already in use.")
 
@@ -81,7 +73,7 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
 
     password = PasswordField('Password', validators=[DataRequired()])
 

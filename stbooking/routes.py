@@ -2,7 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_user import current_user, login_required
+from flask_login import login_user, logout_user
 from sqlalchemy import and_, or_
 import logging
 
@@ -29,7 +30,7 @@ def register():
         guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
         db.session.add(guest)
         db.session.commit()
-        user = UserAccount(username=form.username.data, password=hashed_pw, guest_id=guest.id)
+        user = UserAccount(email=form.username.data, password=hashed_pw, guest_id=guest.id)
         db.session.add(user)
         db.session.commit()
         flash(f'Account created for {form.username.data}.', 'success')
@@ -42,7 +43,7 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = UserAccount.query.filter_by(username=form.username.data).first()
+        user = UserAccount.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
