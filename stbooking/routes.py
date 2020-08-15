@@ -177,10 +177,16 @@ def adminlogin():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(url_for('manage_rooms'))
+            return redirect(url_for('admin'))
         else:
             flash('Login Failed. Please check username and password.', 'danger')
     return render_template('login.html', title='AdminLogin', form=form)
+
+@app.route("/admin", methods=['GET', 'POST'])
+@roles_required('admin')
+def admin():
+    return render_template('admin/index.html')
+
 
 def get_available_booked_room(booked_rooms, form):
     for booked_room in booked_rooms:

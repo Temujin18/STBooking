@@ -25,6 +25,6 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'warning'
-admin = Admin(app)
+admin = Admin(app, template_mode='bootstrap3')
 
 from stbooking import routes
