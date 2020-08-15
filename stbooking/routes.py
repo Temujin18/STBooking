@@ -29,11 +29,9 @@ def register():
         guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
         db.session.add(guest)
         db.session.commit()
-        logging.info(guest)
         user = UserAccount(username=form.username.data, password=hashed_pw, guest_id=guest.id)
         db.session.add(user)
         db.session.commit()
-        logging.info(user)
         flash(f'Account created for {form.username.data}.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
@@ -135,8 +133,7 @@ def manage_guests():
 def update_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     form = BookingForm()
-    
-    #todo_check if updated room type is available
+
     if form.validate_on_submit():
         booking.guest.first_name = form.firstname.data
         booking.guest.last_name = form.lastname.data

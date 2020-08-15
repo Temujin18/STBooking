@@ -1,9 +1,6 @@
-from stbooking import db, login_manager, admin
-from flask_login import UserMixin
+from stbooking import app, db, login_manager, admin
+from flask_user import UserMixin, UserManager
 from flask_admin.contrib.sqla import ModelView
-
-## Room table in postgres has room_type enum with values single, double, triple, quad, queen, king
-## Room table also has room_status enum with values booked, vacant, out order
 
 # class RoomType(enum.Enum):
 #     SINGLE = 'single'
@@ -55,13 +52,24 @@ class Booking(db.Model):
 
 class UserAccount(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False, server_default='')
+    email_confirmed_at = db.Column(db.DateTime())
     guest_id = db.Column(db.Integer, db.ForeignKey('guest.id'), nullable=False)
-    
 
     def __repr__(self):
         return f"User({self.id}, {self.username}, {self.guest_id})"
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    name  = db.Column(db.String(50), unique=True)
+
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user_account.id', ondelete='CASCADE'))    
+    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))    
 
 
 class AdminAccount(db.Model, UserMixin):
@@ -71,6 +79,8 @@ class AdminAccount(db.Model, UserMixin):
 
     def __repr__(self):
         return f"Admin({self.id}, {self.username})"
+
+user_manager = UserManager(app, db, UserAccount)
 
 admin.add_view(ModelView(Guest, db.session))
 admin.add_view(ModelView(Room, db.session))

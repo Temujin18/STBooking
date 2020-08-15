@@ -17,6 +17,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['USER_ENABLE_EMAIL'] = False #required by flask-user, set to false to prevent ConfigError
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
