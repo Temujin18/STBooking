@@ -83,6 +83,17 @@ class AdminAccount(db.Model, UserMixin):
         return f"Admin({self.id}, {self.username})"
 
 class MyModelView(ModelView):
+
+    def is_accessible(self):
+        return (current_user.is_active and
+                current_user.is_authenticated and
+                current_user.has_roles('admin')
+        )
+
+class RoomModelView(ModelView):
+
+    column_list = ['id', 'room_type', 'room_status']
+
     def is_accessible(self):
         return (current_user.is_active and
                 current_user.is_authenticated and
@@ -91,6 +102,6 @@ class MyModelView(ModelView):
 
 
 admin.add_view(MyModelView(Guest, db.session))
-admin.add_view(MyModelView(Room, db.session))
+admin.add_view(RoomModelView(Room, db.session))
 admin.add_view(MyModelView(Booking, db.session))
 admin.add_view(MyModelView(UserAccount, db.session))
