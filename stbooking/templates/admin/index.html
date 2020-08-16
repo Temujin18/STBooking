@@ -1,5 +1,13 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-  <p>Hello world</p>
+  {% if current_user.is_authenticated %}
+    {% if current_user.has_roles('admin')%}
+      <h1>Welcome Admin.</h1>
+    {% else %}
+      <h1>Hi. You need to have user priviliges to view full dashboard.</h1>
+    {% endif %}
+  {% else %}
+    <h1> Please login as admin.</h1>
+  {% endif %}
 {% endblock %}
