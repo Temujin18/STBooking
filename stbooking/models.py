@@ -1,5 +1,5 @@
 from stbooking import db, login_manager, admin
-from flask_user import UserMixin
+from flask_user import UserMixin, current_user
 from flask_admin.contrib.sqla import ModelView
 
 # class RoomType(enum.Enum):
@@ -82,8 +82,15 @@ class AdminAccount(db.Model, UserMixin):
     def __repr__(self):
         return f"Admin({self.id}, {self.username})"
 
+class MyModelView(ModelView):
+    def is_accessible(self):
+        return (current_user.is_active and
+                current_user.is_authenticated and
+                current_user.has_roles('admin')
+        )
 
-admin.add_view(ModelView(Guest, db.session))
-admin.add_view(ModelView(Room, db.session))
-admin.add_view(ModelView(Booking, db.session))
-admin.add_view(ModelView(UserAccount, db.session))
+
+admin.add_view(MyModelView(Guest, db.session))
+admin.add_view(MyModelView(Room, db.session))
+admin.add_view(MyModelView(Booking, db.session))
+admin.add_view(MyModelView(UserAccount, db.session))

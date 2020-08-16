@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from stbooking import app, db, bcrypt
 from stbooking.forms import RegistrationForm, LoginForm, BookingForm
 from stbooking.models import Guest, Room, Booking, UserAccount, AdminAccount, Role
-from flask_user import current_user, login_required, roles_required, UserManager
+from flask_user import current_user, roles_required, UserManager
 from flask_login import login_user, logout_user
 from sqlalchemy import and_, or_
 import logging
@@ -16,7 +16,7 @@ def home():
     return render_template('home.html')
 
 @app.route("/bookings")
-@login_required
+@roles_required('guest')
 def bookings():
     page = request.args.get('page',1, type=int)
     bookings = Booking.query.filter(Guest.id==current_user.guest_id).paginate(page=page, per_page=3)
@@ -122,7 +122,7 @@ def manage_guests():
 
 
 @app.route("/booking/<int:booking_id>/update", methods=['GET', 'POST'])
-@login_required
+@roles_required('guest')
 def update_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     form = BookingForm()
@@ -159,7 +159,7 @@ def update_booking(booking_id):
     return render_template('book.html', title='Update Booking', form=form, legend='Update Booking')
 
 @app.route("/booking/<int:booking_id>/delete", methods=['POST'])
-@login_required
+@roles_required('guest')
 def delete_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     booking.room.room_status = 'VACANT'
