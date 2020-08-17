@@ -73,9 +73,6 @@
               <p>Company Area</p>
               <hr class="light">
               <p><a href="#">Careers</a></p>
-              {% if not current_user.is_authenticated %}
-                <p><a href="{{ url_for('adminlogin') }}">Admin</a></p>
-              {% endif %}
           </div>
           <div class="col-12">
               <hr class="light">

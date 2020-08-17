@@ -99,27 +99,7 @@ def book():
         db.session.commit()
         return redirect(url_for('home'))
     return render_template('book.html', title='Book', form=form, legend='Book Today!')
-
-
-@app.route("/manage/rooms", methods=['GET', 'POST'])
-@roles_required('admin')
-def manage_rooms():
-    page = request.args.get('page',1, type=int)
-    rooms = Room.query.order_by(Room.id.asc()).paginate(page=page, per_page=10)
-    return render_template('manage_rooms.html', title='Manage Rooms', rooms=rooms, page='manage_rooms')
-
-@app.route("/manage/bookings", methods=['GET', 'POST'])
-def manage_bookings():
-    page = request.args.get('page',1, type=int)
-    bookings = Booking.query.order_by(Booking.id.asc()).paginate(page=page, per_page=10)
-    return render_template('manage_bookings.html', title='Manage Bookings', bookings=bookings, page='manage_bookings')
-
-@app.route("/manage/guests", methods=['GET', 'POST'])
-def manage_guests():
-    page = request.args.get('page',1, type=int)
-    guests = Guest.query.order_by(Guest.id.asc()).paginate(page=page, per_page=10)
-    return render_template('manage_guests.html', title='Manage Guests', guests=guests, page='manage_guests')
-
+    
 
 @app.route("/booking/<int:booking_id>/update", methods=['GET', 'POST'])
 @roles_required('guest')
