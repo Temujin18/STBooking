@@ -50,11 +50,13 @@ def register():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
+
     form = LoginForm()
     if form.validate_on_submit():
         user = UserAccount.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
+        
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
@@ -81,10 +83,10 @@ def book():
             flash(f'No vacant {form.room.data.title()} Rooms available.', 'warning')
             return redirect(url_for('book'))
 
-        exists = Guest.query.filter_by(email=form.email.data).scalar() is not None
+        exists = Guest.query.filter_by(email=form.email.data).first() is not None
 
         if exists:
-            guest = Guest.query.filter_by(email=form.email.data).scalar()
+            guest = Guest.query.filter_by(email=form.email.data).first()
         else:
             guest = Guest(first_name=form.firstname.data, last_name=form.lastname.data, email=form.email.data, phone=form.phone.data)
 
@@ -147,25 +149,6 @@ def delete_booking(booking_id):
     db.session.commit()
     flash('Your booking has been deleted!', 'success')
     return redirect(url_for('bookings'))
-
-
-@app.route("/admin/login", methods=['GET', 'POST'])
-def adminlogin():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = UserAccount.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(url_for('admin'))
-        else:
-            flash('Login Failed. Please check username and password.', 'danger')
-    return render_template('login.html', title='AdminLogin', form=form)
-
-@app.route("/admin", methods=['GET', 'POST'])
-@roles_required('admin')
-def admin():
-    return render_template('admin/index.html')
 
 
 def get_available_booked_room(booked_rooms, form):
