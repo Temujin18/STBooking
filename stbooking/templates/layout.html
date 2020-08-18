@@ -26,6 +26,17 @@
               {% if current_user.is_authenticated %}
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+
+                {% if current_user.has_roles('admin')%}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin.index') }}">Dashboard</a>
+                  </li>
+                    {% else %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('bookings') }}">Bookings</a>
+                  </li>
+                    {% endif %}
+
                 </li>
               {% else %}
                 <li class="nav-item">

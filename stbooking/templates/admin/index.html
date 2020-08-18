@@ -10,4 +10,8 @@
   {% else %}
     <h1> Please login as admin.</h1>
   {% endif %}
+
+  <a href="{{ url_for('logout') }}">
+    <h1>Logout</h1>
+  </a>
 {% endblock %}
