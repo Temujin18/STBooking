@@ -91,6 +91,12 @@
                         {{ form.phone(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+
+            {{ form.recaptcha }}
+            {% for error in form.recaptcha.errors %}
+                <span style="color:red;">{{ error }}</span>
+            {% endfor %}
+
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>

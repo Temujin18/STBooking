@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, ValidationError
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
@@ -40,6 +40,7 @@ class BookingForm(FlaskForm):
 
     start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()] )
     end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    recaptcha =  RecaptchaField()
 
     def validate_end_date(form, field):
         if field.data < form.start_date.data:
@@ -63,6 +64,8 @@ class RegistrationForm(FlaskForm):
             validators=[DataRequired(), Length(min=2, max=50)])
 
     phone = StringField('Cell Number', validators=[DataRequired(), Phone()])
+
+    recaptcha = RecaptchaField()
 
     def validate_email(form, email):
         exists = UserAccount.query.filter_by(email=email.data).scalar() is not None
