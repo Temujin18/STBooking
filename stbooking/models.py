@@ -2,19 +2,6 @@ from stbooking import db, login_manager, admin
 from flask_user import UserMixin, current_user
 from flask_admin.contrib.sqla import ModelView
 
-# class RoomType(enum.Enum):
-#     SINGLE = 'single'
-#     DOUBLE = 'double'
-#     TRIPLE = 'triple'
-#     QUAD = 'quad'
-#     QUEEN = 'queen'
-#     KING = 'king'
-
-# class RoomStatus(enum.Enum):
-#     BOOKED = 'booked'
-#     VACANT = 'vacant'
-#     OUT_OF_ORDER = 'out of order'
-
 @login_manager.user_loader
 def load_user(user_id):
     return UserAccount.query.get(int(user_id))

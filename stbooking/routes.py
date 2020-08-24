@@ -153,10 +153,10 @@ def delete_booking(booking_id):
 
 def get_available_booked_room(booked_rooms, form):
     for booked_room in booked_rooms:
-            #check if bookings for each room collides with booking dates
+        #check if bookings for each room collides with booking dates
         room_bookings = Booking.query.filter_by(room_id = booked_room.id).all()
 
-        if not room_bookings: #will only trigger if a room is booked but there are no bookings associated with it
+        if not room_bookings: #true if a room is booked but there are no bookings associated with it
             return booked_room
 
         for room_booking in room_bookings:
